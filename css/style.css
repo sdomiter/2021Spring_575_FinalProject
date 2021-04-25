@@ -1,1 +1,99 @@
-/*insert style here*/
+h3 {
+  text-align: center;
+}
+
+.card {
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  /* spadding-bottom: 10px; */
+}
+
+.row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+#mapid {
+  height: 460px;
+  width: 600px;
+  /* display: inline-block; */
+  /* padding-left: 100px; */
+}
+
+#mapcol col-6 {
+  padding-left: 30px;
+}
+
+#barChart {
+  /* float: right; */
+  width: 800px;
+  height: 200px;
+}
+
+/* #linePlot {
+  width: 800px;
+  height: 200px;
+} */
+
+.barchart {
+  /* float: right; */
+  width: 600px;
+  height: 230px;
+}
+
+.linePlot {
+  /* background-color; */
+  padding-top: 20px;
+}
+
+.line-path {
+  fill: none;
+
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  mix-blend-mode: multiply;
+}
+
+.grid line {
+  stroke: lightgrey;
+  stroke-opacity: 0.4;
+  shape-rendering: crispEdges;
+}
+
+svg {
+  /* background-color: white; */
+  /*box-shadow: 0px 3px 15px rgba(0,0,0,0.2); */
+  /*border-radius: 5px; */
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* #panel {
+  width: 16%;
+  padding: 20px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+  line-height: 42px;
+} */
+
+.range-slider {
+  width: 55%;
+}
+
+.step {
+  width: 20%;
+}
+
+.step img {
+  width: 100%;
+}
+
+#forward {
+  float: right;
+}
+
+#reverse {
+  float: left;
+}
