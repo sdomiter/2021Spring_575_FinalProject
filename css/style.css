@@ -3,7 +3,7 @@ h3 {
 }
 
 .card {
-  padding-top: 10px;
+  padding-top: 1px;
   padding-left: 10px;
   padding-right: 10px;
   /* spadding-bottom: 10px; */
@@ -14,8 +14,8 @@ h3 {
   padding-bottom: 10px;
 }
 #mapid {
-  height: 460px;
-  width: 600px;
+  height: 600px;
+  width: 750px;
   /* display: inline-block; */
   /* padding-left: 100px; */
 }
@@ -38,7 +38,12 @@ h3 {
 .barchart {
   /* float: right; */
   width: 600px;
-  height: 230px;
+  height: 400px;
+}
+
+#bar-chart-title {
+  font-size: 18px;
+  text-align: center;
 }
 
 .linePlot {
@@ -55,9 +60,21 @@ h3 {
   mix-blend-mode: multiply;
 }
 
-.grid line {
+.x-grid line {
   stroke: lightgrey;
   stroke-opacity: 0.4;
+  shape-rendering: crispEdges;
+}
+
+.y-grid line {
+  stroke: lightgrey;
+  stroke-opacity: 0.4;
+  shape-rendering: crispEdges;
+}
+
+.y-axis-bar {
+  stroke: lightgrey;
+  stroke-opacity: 0.1;
   shape-rendering: crispEdges;
 }
 
