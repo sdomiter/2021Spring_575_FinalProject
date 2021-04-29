@@ -15,7 +15,7 @@ var neigh_id_dict = {};
 
 // "#FFEDA0"
 
-var getColor = chroma.scale(["white", "#800026"]).domain([0, 20000]);
+var getColor = chroma.scale(["#F9EBEA", "#7B241C"]).domain([0, 20000]);
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 var measures = [
@@ -305,6 +305,14 @@ function callback(data) {
   });
   console.log(attributes_all_new);
 
+  // Add chained selection for two dropdown menu
+  $alloption = $(".measure-select").html();
+  $(".category-select").change(function () {
+    $(".measure-select").html($alloption);
+    var val = $(".category-select").find(":selected").val();
+    $(".measure-select option[class!=" + val + "]").remove();
+  });
+
   // Add eventListener for measure select menu
   $(".measure-select").on("change", function () {
     measure = $(this).find(":selected").val();
@@ -485,13 +493,13 @@ function createBarChart() {
     });
 
   // Initialize bar plot title
-  var chartTitle = chart
-    .append("text")
-    .attr("x", 210)
-    .attr("y", 20)
-    .attr("class", "barChartTitle")
-    .style("font-size", "18px")
-    .text("Number of " + measure + " in each neighborhood");
+  // var chartTitle = chart
+  //   .append("text")
+  //   .attr("x", 210)
+  //   .attr("y", 20)
+  //   .attr("class", "barChartTitle")
+  //   .style("font-size", "18px")
+  //   .text("Number of " + measure + " in each neighborhood");
 
   changeBarChartByMeasure(bars);
 }
@@ -522,11 +530,13 @@ function changeBarChartByMeasure(bars) {
     })
     .style("fill", (d) => getColor(d[measure]));
 
-  chart
-    .select(".barChartTitle")
-    .transition()
-    .duration(200000)
-    .text("Number of " + measure + " in each neighborhood");
+  $(".bar-chart-title").text(measure + " by neighborhood association");
+
+  // chart
+  //   .select(".barChartTitle")
+  //   .transition()
+  //   .duration(200000)
+  //   .text("Number of " + measure + " in each neighborhood");
 
   // function changeBarColor(d) {
   //   var barChart = d3.select("#barChart").select("." + "barchart");
@@ -594,7 +604,7 @@ function createLineChart(data) {
 
   const g = svg
     .append("g")
-    .attr("transform", `translate(${margin.left + 50},${margin.top + 20})`);
+    .attr("transform", `translate(${margin.left + 50},${margin.top - 5})`);
 
   // Initialise a X axis:
   var xScale = d3
@@ -664,9 +674,13 @@ function createLineChart(data) {
   //   .attr("fill", "black")
   //   .text(xAxisLabel);
 
-  // Add Title
-  const title = measure + " by neighborhood from year 2012 - 2019 ";
-  g.append("text").attr("class", "title").attr("y", -10).text(title);
+  // // Add Title
+  // const title = measure + " by neighborhood from year 2012 - 2019 ";
+  // g.append("text").attr("class", "title").attr("y", -10).text(title);
+
+  $(".line-chart-title").text(
+    measure + " by neighborhood from year 2012 - 2019"
+  );
 
   addLine(colorScale);
 }
@@ -681,6 +695,12 @@ function addLine(colorScale) {
   const innerHeight = height - margin.top - margin.bottom;
 
   var data = attributes_all_new;
+
+  // d3.select("#lineChart")
+  //   .select(".title")
+  //   .transition()
+  //   .duration(200000)
+  //   .text(measure + " by neighborhood from year 2012 - 2019 ");
 
   const xScale = d3
     .scaleTime()
@@ -734,8 +754,9 @@ function addLine(colorScale) {
     yAxisG
       .append("text")
       .attr("class", "axis-label")
-      .attr("y", -60)
+      .attr("y", -45)
       .attr("x", -innerHeight / 2)
+      // .attr("x", 10)
       .attr("fill", "black")
       .attr("transform", `rotate(-90)`)
       .attr("text-anchor", "middle")
@@ -777,6 +798,10 @@ function addLine(colorScale) {
     lineData.push(temp);
   });
   console.log(lineData);
+
+  $(".line-chart-title").text(
+    measure + " by neighborhood from year 2012 - 2019"
+  );
 
   // var lines = g.selectAll(".line").data(lineData).attr("class", "line-path");
   // // transition from previous paths to new paths

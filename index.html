@@ -47,24 +47,34 @@
 
 
         <div class="row">
+
           <div class = "col-3">
+            <select class="category-select" aria-label="Default select example">
+              <option selected>Please select a category</option>
+              
+              <option value="education">education</option>
+              <option value="safety">safety</option>
+              <option value="property">property</option>
+              <option value="population">population</option>
+              
+            </select>
+          </div>
+          <div class = "col-3 " >
             <select class="measure-select" aria-label="Default select example">
               <option selected>Please select an attribute</option>
               
-              <option value="tot_pop_10">Population</option>
-              <option value="pc_wht_10">White pct</option>
-              <option value="avg_huval">Avg House Value</option>
-              <option value="yrblt_mdn">yrblt_mdn</option>
-              <option value="crash">crash</option>
-              <option value="crm_prop">crm_prop</option>
-              <!-- FIXME -->
-              <option value="yrblt_mdn">yrblt_mdn</option>
-             
-              <option value="pc_ov64_10">% over 64</option>
-              <option value="avg_stcnd">avg_stcnd</option>
-              <option value="pc_un18_10">pc_un18_10</option>
-              <option value="pc_fmwc_10">pc_fmwc_10</option>
-              <option value="crm_pers">crm_pers</option>
+              <option value="tot_pop_10" class = "population">Population</option>
+              <option value="pc_wht_10" class = "population">White pct</option>
+              <option value="avg_huval" class = "property">Avg House Value</option>
+              <option value="yrblt_mdn" class = "property">yrblt_mdn</option>
+              <option value="crash" class = "safety">crash</option>
+              <option value="crm_prop" class = "safety">crm_prop</option>
+          
+              <option value="pc_ov64_10" class = "population">% over 64</option>
+              <option value="avg_stcnd" class = "property">avg_stcnd</option>
+              <option value="pc_un18_10" class = "population">pc_un18_10</option>
+              <option value="pc_fmwc_10" class = "safety">pc_fmwc_10</option>
+              <option value="crm_pers" class = "safety">crm_pers</option>
             </select>
           </div>
         </div>
@@ -81,6 +91,7 @@
               <div id = "barChart"></div>
             </div>
             <div class = "row">
+              <div id = "line-chart-title" class = "line-chart-title chart-title">Total Population by neighborhood from year 2012 - 2019</div>
               <div id = "lineChart"></div>
             </div>
 
