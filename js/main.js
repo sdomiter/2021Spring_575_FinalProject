@@ -27,12 +27,16 @@ var measures = [
   "crm_prop",
   "yrblt_mdn",
   "pc_ov64_10",
+  "avg_stcnd",
+  "pc_un18_10",
+  "pc_fmwc_10",
+  "crm_pers",
 ];
 
 var chartWidth = window.innerWidth * 0.5,
   chartWidth = 600,
   // chartHeight = 230,
-  chartHeight = 300;
+  chartHeight = 220;
 (leftPadding = 40),
   (rightPadding = 2),
   (topBottomPadding = 5),
@@ -210,7 +214,7 @@ function getData() {
     d3.csv("data/nip_neighbassoc_14.csv"),
     d3.csv("data/nip_neighbassoc_13.csv"),
     d3.csv("data/nip_neighbassoc_12.csv"),
-    d3.csv("data/nip_neighbassoc_total.csv"),
+    d3.csv("data/nip_neighbassoc_total (2).csv"),
     // d3.json("data/EuropeCountries.topojson"),
     (us = d3.json(
       "https://opendata.arcgis.com/datasets/66e4a6a80ae64865a81bc8d4464a6417_12.geojson"
@@ -561,7 +565,7 @@ function reupdateBarChartColor(d) {
 }
 
 function createLineChart(data) {
-  var height = 300;
+  var height = 200;
   var width = 550;
   var margin = { top: 10, right: 10, bottom: 10, left: 10 };
   const innerWidth = width - margin.left - margin.right;
@@ -670,7 +674,7 @@ function createLineChart(data) {
 function addLine(colorScale) {
   console.log("enter add line");
   console.log(attributes_all_new);
-  var height = 300;
+  var height = 200;
   var width = 550;
   var margin = { top: 10, right: 10, bottom: 10, left: 10 };
   const innerWidth = width - margin.left - margin.right;

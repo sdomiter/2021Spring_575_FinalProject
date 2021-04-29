@@ -26,8 +26,8 @@ h3 {
 
 #barChart {
   /* float: right; */
-  width: 800px;
-  height: 200px;
+  width: 600px;
+  height: 260px;
 }
 
 /* #linePlot {
@@ -38,7 +38,7 @@ h3 {
 .barchart {
   /* float: right; */
   width: 600px;
-  height: 400px;
+  height: 250px;
 }
 
 #bar-chart-title {
