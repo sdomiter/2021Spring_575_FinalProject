@@ -18,6 +18,8 @@ var neigh_id_dict = {};
 var getColor = chroma.scale(["#F9EBEA", "#7B241C"]).domain([0, 20000]);
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
+var colorMapping = {};
+
 var measures = [
   "tot_pop_10",
   "pc_wht_10",
@@ -165,15 +167,27 @@ function styleAdd(feature) {
   console.log(combinedAttributes);
 
   if (feature.properties[combinedAttributes]) {
-    return {
-      fillColor: getColor(feature.properties[combinedAttributes]),
-      weight: 2,
-      opacity: 1,
-      color: "grey",
-      dashArray: "3",
-      fillOpacity: 0.7,
-      className: feature.properties["NEIGHB_NAME"] + "Map",
-    };
+    if (colorMapping.hasOwnProperty(feature.properties.NEIGHB_NAME)) {
+      return {
+        fillColor: colorMapping[feature.properties.NEIGHB_NAME],
+        weight: 2,
+        opacity: 1,
+        color: "grey",
+        dashArray: "3",
+        fillOpacity: 0.7,
+        className: feature.properties["NEIGHB_NAME"] + "Map",
+      };
+    } else {
+      return {
+        fillColor: getColor(feature.properties[combinedAttributes]),
+        weight: 2,
+        opacity: 1,
+        color: "grey",
+        dashArray: "3",
+        fillOpacity: 0.7,
+        className: feature.properties["NEIGHB_NAME"] + "Map",
+      };
+    }
   } else {
     return {
       fillColor: "black",
@@ -326,24 +340,23 @@ function callback(data) {
     console.log(maxValueByMeasure);
     // Reset color based on maximum value of selected measure
     getColor = chroma
-      .scale(["white", "#800026"])
+      .scale(["#F9EBEA", "#7B241C"])
       .domain([0, maxValueByMeasure]);
 
     // Remember the color of the selected elements
     console.log(neighborhoods);
-    var colorMapping = {};
+    colorMapping = {};
     neighborhoods.forEach((neigh) => {
       var selected_elements = document.getElementsByClassName(neigh + "Map");
       var selected_element = selected_elements[0];
-      console.log(
-        $(".Orchard Ridge Neighborhood AssociationMap leaflet-interactive").css(
-          "fill"
-        )
-      );
+      console.log(selected_element);
+      console.log(getComputedStyle(selected_element)["fill"]);
       // selected_elements.style["weight"] = "red";
       // console.log(getStyles(selected_element, "fill"));
-      colorMapping[neigh] = selected_element["fill"];
+      colorMapping[neigh] = getComputedStyle(selected_element)["fill"];
     });
+
+    console.log(colorMapping);
 
     // Update the color Scale of Map
     changeMapColorByMeasure();
@@ -509,7 +522,7 @@ function changeBarChartByMeasure(bars) {
   var maxValue = d3.max(attributes_19, (d) => {
     return parseFloat(d[measure]);
   });
-  getColor = chroma.scale(["white", "#800026"]).domain([0, maxValue]);
+  getColor = chroma.scale(["#F9EBEA", "#7B241C"]).domain([0, maxValue]);
   var yScale = d3.scaleLinear().range([chartHeight, 0]).domain([0, maxValue]);
   var yAxis = d3.axisLeft().scale(yScale).tickSize(-innerWidth).tickPadding(10);
 
@@ -528,7 +541,13 @@ function changeBarChartByMeasure(bars) {
     .attr("y", function (d, i) {
       return yScale(parseFloat(d[measure])) + topBottomPadding;
     })
-    .style("fill", (d) => getColor(d[measure]));
+    .style("fill", function (d) {
+      if (colorMapping.hasOwnProperty(d.name)) {
+        return colorMapping[d.name];
+      } else {
+        return getColor(d[measure]);
+      }
+    });
 
   $(".bar-chart-title").text(measure + " by neighborhood association");
 
