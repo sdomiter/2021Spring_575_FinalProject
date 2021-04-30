@@ -15,8 +15,10 @@ var neigh_id_dict = {};
 
 // "#FFEDA0"
 
-var getColor = chroma.scale(["white", "#800026"]).domain([0, 20000]);
+var getColor = chroma.scale(["#F9EBEA", "#7B241C"]).domain([0, 20000]);
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+var colorMapping = {};
 
 var measures = [
   "tot_pop_10",
@@ -27,12 +29,16 @@ var measures = [
   "crm_prop",
   "yrblt_mdn",
   "pc_ov64_10",
+  "avg_stcnd",
+  "pc_un18_10",
+  "pc_fmwc_10",
+  "crm_pers",
 ];
 
 var chartWidth = window.innerWidth * 0.5,
   chartWidth = 600,
   // chartHeight = 230,
-  chartHeight = 300;
+  chartHeight = 220;
 (leftPadding = 40),
   (rightPadding = 2),
   (topBottomPadding = 5),
@@ -161,15 +167,27 @@ function styleAdd(feature) {
   console.log(combinedAttributes);
 
   if (feature.properties[combinedAttributes]) {
-    return {
-      fillColor: getColor(feature.properties[combinedAttributes]),
-      weight: 2,
-      opacity: 1,
-      color: "grey",
-      dashArray: "3",
-      fillOpacity: 0.7,
-      className: feature.properties["NEIGHB_NAME"] + "Map",
-    };
+    if (colorMapping.hasOwnProperty(feature.properties.NEIGHB_NAME)) {
+      return {
+        fillColor: colorMapping[feature.properties.NEIGHB_NAME],
+        weight: 2,
+        opacity: 1,
+        color: "grey",
+        dashArray: "3",
+        fillOpacity: 0.7,
+        className: feature.properties["NEIGHB_NAME"] + "Map",
+      };
+    } else {
+      return {
+        fillColor: getColor(feature.properties[combinedAttributes]),
+        weight: 2,
+        opacity: 1,
+        color: "grey",
+        dashArray: "3",
+        fillOpacity: 0.7,
+        className: feature.properties["NEIGHB_NAME"] + "Map",
+      };
+    }
   } else {
     return {
       fillColor: "black",
@@ -210,7 +228,7 @@ function getData() {
     d3.csv("data/nip_neighbassoc_14.csv"),
     d3.csv("data/nip_neighbassoc_13.csv"),
     d3.csv("data/nip_neighbassoc_12.csv"),
-    d3.csv("data/nip_neighbassoc_total.csv"),
+    d3.csv("data/nip_neighbassoc_total (2).csv"),
     // d3.json("data/EuropeCountries.topojson"),
     (us = d3.json(
       "https://opendata.arcgis.com/datasets/66e4a6a80ae64865a81bc8d4464a6417_12.geojson"
@@ -301,6 +319,14 @@ function callback(data) {
   });
   console.log(attributes_all_new);
 
+  // Add chained selection for two dropdown menu
+  $alloption = $(".measure-select").html();
+  $(".category-select").change(function () {
+    $(".measure-select").html($alloption);
+    var val = $(".category-select").find(":selected").val();
+    $(".measure-select option[class!=" + val + "]").remove();
+  });
+
   // Add eventListener for measure select menu
   $(".measure-select").on("change", function () {
     measure = $(this).find(":selected").val();
@@ -314,24 +340,23 @@ function callback(data) {
     console.log(maxValueByMeasure);
     // Reset color based on maximum value of selected measure
     getColor = chroma
-      .scale(["white", "#800026"])
+      .scale(["#F9EBEA", "#7B241C"])
       .domain([0, maxValueByMeasure]);
 
     // Remember the color of the selected elements
     console.log(neighborhoods);
-    var colorMapping = {};
+    colorMapping = {};
     neighborhoods.forEach((neigh) => {
       var selected_elements = document.getElementsByClassName(neigh + "Map");
       var selected_element = selected_elements[0];
-      console.log(
-        $(".Orchard Ridge Neighborhood AssociationMap leaflet-interactive").css(
-          "fill"
-        )
-      );
+      console.log(selected_element);
+      console.log(getComputedStyle(selected_element)["fill"]);
       // selected_elements.style["weight"] = "red";
       // console.log(getStyles(selected_element, "fill"));
-      colorMapping[neigh] = selected_element["fill"];
+      colorMapping[neigh] = getComputedStyle(selected_element)["fill"];
     });
+
+    console.log(colorMapping);
 
     // Update the color Scale of Map
     changeMapColorByMeasure();
@@ -481,13 +506,13 @@ function createBarChart() {
     });
 
   // Initialize bar plot title
-  var chartTitle = chart
-    .append("text")
-    .attr("x", 210)
-    .attr("y", 20)
-    .attr("class", "barChartTitle")
-    .style("font-size", "18px")
-    .text("Number of " + measure + " in each neighborhood");
+  // var chartTitle = chart
+  //   .append("text")
+  //   .attr("x", 210)
+  //   .attr("y", 20)
+  //   .attr("class", "barChartTitle")
+  //   .style("font-size", "18px")
+  //   .text("Number of " + measure + " in each neighborhood");
 
   changeBarChartByMeasure(bars);
 }
@@ -497,7 +522,7 @@ function changeBarChartByMeasure(bars) {
   var maxValue = d3.max(attributes_19, (d) => {
     return parseFloat(d[measure]);
   });
-  getColor = chroma.scale(["white", "#800026"]).domain([0, maxValue]);
+  getColor = chroma.scale(["#F9EBEA", "#7B241C"]).domain([0, maxValue]);
   var yScale = d3.scaleLinear().range([chartHeight, 0]).domain([0, maxValue]);
   var yAxis = d3.axisLeft().scale(yScale).tickSize(-innerWidth).tickPadding(10);
 
@@ -516,13 +541,21 @@ function changeBarChartByMeasure(bars) {
     .attr("y", function (d, i) {
       return yScale(parseFloat(d[measure])) + topBottomPadding;
     })
-    .style("fill", (d) => getColor(d[measure]));
+    .style("fill", function (d) {
+      if (colorMapping.hasOwnProperty(d.name)) {
+        return colorMapping[d.name];
+      } else {
+        return getColor(d[measure]);
+      }
+    });
 
-  chart
-    .select(".barChartTitle")
-    .transition()
-    .duration(200000)
-    .text("Number of " + measure + " in each neighborhood");
+  $(".bar-chart-title").text(measure + " by neighborhood association");
+
+  // chart
+  //   .select(".barChartTitle")
+  //   .transition()
+  //   .duration(200000)
+  //   .text("Number of " + measure + " in each neighborhood");
 
   // function changeBarColor(d) {
   //   var barChart = d3.select("#barChart").select("." + "barchart");
@@ -561,7 +594,7 @@ function reupdateBarChartColor(d) {
 }
 
 function createLineChart(data) {
-  var height = 300;
+  var height = 200;
   var width = 550;
   var margin = { top: 10, right: 10, bottom: 10, left: 10 };
   const innerWidth = width - margin.left - margin.right;
@@ -590,7 +623,7 @@ function createLineChart(data) {
 
   const g = svg
     .append("g")
-    .attr("transform", `translate(${margin.left + 50},${margin.top + 20})`);
+    .attr("transform", `translate(${margin.left + 50},${margin.top - 5})`);
 
   // Initialise a X axis:
   var xScale = d3
@@ -660,9 +693,13 @@ function createLineChart(data) {
   //   .attr("fill", "black")
   //   .text(xAxisLabel);
 
-  // Add Title
-  const title = measure + " by neighborhood from year 2012 - 2019 ";
-  g.append("text").attr("class", "title").attr("y", -10).text(title);
+  // // Add Title
+  // const title = measure + " by neighborhood from year 2012 - 2019 ";
+  // g.append("text").attr("class", "title").attr("y", -10).text(title);
+
+  $(".line-chart-title").text(
+    measure + " by neighborhood from year 2012 - 2019"
+  );
 
   addLine(colorScale);
 }
@@ -670,13 +707,19 @@ function createLineChart(data) {
 function addLine(colorScale) {
   console.log("enter add line");
   console.log(attributes_all_new);
-  var height = 300;
+  var height = 200;
   var width = 550;
   var margin = { top: 10, right: 10, bottom: 10, left: 10 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
   var data = attributes_all_new;
+
+  // d3.select("#lineChart")
+  //   .select(".title")
+  //   .transition()
+  //   .duration(200000)
+  //   .text(measure + " by neighborhood from year 2012 - 2019 ");
 
   const xScale = d3
     .scaleTime()
@@ -730,8 +773,9 @@ function addLine(colorScale) {
     yAxisG
       .append("text")
       .attr("class", "axis-label")
-      .attr("y", -60)
+      .attr("y", -45)
       .attr("x", -innerHeight / 2)
+      // .attr("x", 10)
       .attr("fill", "black")
       .attr("transform", `rotate(-90)`)
       .attr("text-anchor", "middle")
@@ -773,6 +817,10 @@ function addLine(colorScale) {
     lineData.push(temp);
   });
   console.log(lineData);
+
+  $(".line-chart-title").text(
+    measure + " by neighborhood from year 2012 - 2019"
+  );
 
   // var lines = g.selectAll(".line").data(lineData).attr("class", "line-path");
   // // transition from previous paths to new paths
