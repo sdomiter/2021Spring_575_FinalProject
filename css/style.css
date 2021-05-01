@@ -1,13 +1,18 @@
 h3 {
   text-align: center;
+  font-size: 5px;
 }
 
-.card {
+h5 {
+  text-align: center;
+}
+
+/* .card {
   padding-top: 1px;
   padding-left: 10px;
   padding-right: 10px;
   /* spadding-bottom: 10px; */
-}
+} */
 
 .row {
   padding-top: 10px;
