@@ -5,8 +5,9 @@ var map = (map = L.map("mapid", {
   zoom: 11.4,
 }));
 var minValue;
-
+// Opening category
 var measure = "tot_pop_10";
+//Opening year
 var measureYear = "19";
 var year = 2019;
 var attributeYear = "19";
@@ -14,12 +15,13 @@ var neighborhoods = [];
 var neigh_id_dict = {};
 
 // "#FFEDA0"
-
+//Set chloropleth range 
 var getColor = chroma.scale(["#F9EBEA", "#7B241C"]).domain([0, 20000]);
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 var colorMapping = {};
 
+//categories that can be displayed
 var measures = [
   "tot_pop_10",
   "pc_wht_10",
@@ -35,11 +37,12 @@ var measures = [
   "crm_pers",
 ];
 
+//Set chart sizing
 var chartWidth = window.innerWidth * 0.5,
   chartWidth = 600,
   // chartHeight = 230,
   chartHeight = 220;
-(leftPadding = 40),
+  (leftPadding = 40),
   (rightPadding = 2),
   (topBottomPadding = 5),
   (chartInnerWidth = chartWidth - leftPadding - rightPadding),
@@ -48,21 +51,26 @@ var chartWidth = window.innerWidth * 0.5,
   (translate = "translate(" + leftPadding + "," + topBottomPadding / 2 + ")");
 
 function onEachFeature(feature, layer) {
+  //formats attribute so it can be recognized easier
   var popupContent = measure + "_" + attributeYear;
+ 
+  //binds popup to each layer 
   if (feature.properties) {
     layer.bindPopup(
       "<p>" +
-        "Neighborhood: " +
+        // "Neighborhood: " +
         feature.properties["NEIGHB_NAME"] +
         " " +
-        feature.properties["OBJECTID"] +
-        "<br>" +
+        //what is the point of this?
+        // feature.properties["OBJECTID"] +
+        // "<br>" +
         popupContent +
         ": " +
         feature.properties[popupContent] +
         "</p>"
     );
   }
+  //happens specific to layer, mouse over and click. 
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlight,
@@ -70,32 +78,36 @@ function onEachFeature(feature, layer) {
   });
 }
 
+//Causes highlight when moused over
 function highlightFeature(e) {
   var layer = e.target;
   var neighborName = layer.feature.properties["NEIGHB_NAME"];
+  console.log(layer)
   var GEOID;
-
+  //
   for (var i = 0; i < attributes_19.length; i++) {
     if (attributes_19[i]["name"] === neighborName) {
       GEOID = attributes_19[i]["geo_key"];
     }
   }
   highlightNeighBar(GEOID);
-
+  //styles outline
   layer.setStyle({
     weight: 5,
     color: "#666",
     dashArray: "",
     fillOpacity: 0.7,
   });
+  //
   if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
     layer.bringToFront();
   }
 }
 
+//Ends highlight when moused off
 function resetHighlight(e) {
   var layer = e.target;
-
+  //returns to original outline 
   layer.setStyle({
     weight: 2,
     opacity: 1,
@@ -106,14 +118,14 @@ function resetHighlight(e) {
 
   var neighborName = layer.feature.properties["NEIGHB_NAME"];
   var GEOID;
-
+  //
   for (var i = 0; i < attributes_19.length; i++) {
     if (attributes_19[i]["name"] === neighborName) {
       GEOID = attributes_19[i]["geo_key"];
     }
   }
   dehighlightNeighBar(GEOID);
-
+  //
   if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
     layer.bringToFront();
   }
@@ -122,7 +134,7 @@ function resetHighlight(e) {
 function changeColor(e) {
   var layer = e.target;
   var neighborName = layer.feature.properties["NEIGHB_NAME"];
-  // console.log(neighborName);
+  //console.log(neighborName);
 
   if (layer.options.fillColor !== colorScale(neighborName)) {
     neighborhoods.push(neighborName);
@@ -148,7 +160,7 @@ function changeColor(e) {
     });
     reupdateBarChartColor(layer.feature);
 
-    console.log(layer.feature);
+    //console.log(layer.feature);
     removeLine(layer.feature);
     // addLine(colorScale);
   }
@@ -164,7 +176,7 @@ function styleAdd(feature) {
   // });
 
   var combinedAttributes = measure + "_" + attributeYear;
-  console.log(combinedAttributes);
+  ////console.log(combinedAttributes);
 
   if (feature.properties[combinedAttributes]) {
     if (colorMapping.hasOwnProperty(feature.properties.NEIGHB_NAME)) {
@@ -261,7 +273,7 @@ function callback(data) {
     attributes_12,
   ];
 
-  console.log(attributes_all);
+  //console.log(attributes_all);
 
   // Minor differences between two datasets
   var undefinedCommunity = [
@@ -271,18 +283,18 @@ function callback(data) {
 
   attributes_19.map((d) => {
     if (undefinedCommunity.indexOf(d.name) === -1) {
-      // console.log("enter");
+      // ////console.log("enter");
       return (neigh_id_dict[d.name] = d.geo_key);
     }
   });
 
-  // console.log(neigh_id_dict);
+  //console.log(neigh_id_dict);
 
   var all_neighborhoods = madisonMap.features.map(
     (d) => d.properties.NEIGHB_NAME
   );
 
-  // console.log(all_neighborhoods);
+  // ////console.log(all_neighborhoods);
 
   const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
   colorScale.domain(all_neighborhoods);
@@ -303,13 +315,13 @@ function callback(data) {
     return neigh.properties["NEIGHB_NAME"] !== "City of Madison";
   });
 
-  console.log(attributes_all);
+  ////console.log(attributes_all);
 
   // Change data format from string to numerical value
   attributes_all_new = attributes_all.map(function (d) {
     d.year = new Date(d.year);
     measures.forEach(function (m) {
-      // console.log(m);
+      // ////console.log(m);
       if (m !== "year") {
         d[m] = parseFloat(d[m]);
         // d[m] = +d[m];
@@ -317,7 +329,7 @@ function callback(data) {
     });
     return d;
   });
-  console.log(attributes_all_new);
+  ////console.log(attributes_all_new);
 
   // Add chained selection for two dropdown menu
   $alloption = $(".measure-select").html();
@@ -330,33 +342,33 @@ function callback(data) {
   // Add eventListener for measure select menu
   $(".measure-select").on("change", function () {
     measure = $(this).find(":selected").val();
-    console.log(measure);
-    console.log(attributes_all_new);
+    ////console.log(measure);
+    ////console.log(attributes_all_new);
 
     // Calculate the maximum value of selected measure
     var maxValueByMeasure = d3.max(attributes_all_new, (d) => {
       return parseFloat(d[measure]);
     });
-    console.log(maxValueByMeasure);
+    ////console.log(maxValueByMeasure);
     // Reset color based on maximum value of selected measure
     getColor = chroma
       .scale(["#F9EBEA", "#7B241C"])
       .domain([0, maxValueByMeasure]);
 
     // Remember the color of the selected elements
-    console.log(neighborhoods);
+    ////console.log(neighborhoods);
     colorMapping = {};
     neighborhoods.forEach((neigh) => {
       var selected_elements = document.getElementsByClassName(neigh + "Map");
       var selected_element = selected_elements[0];
-      console.log(selected_element);
-      console.log(getComputedStyle(selected_element)["fill"]);
+      ////console.log(selected_element);
+      ////console.log(getComputedStyle(selected_element)["fill"]);
       // selected_elements.style["weight"] = "red";
-      // console.log(getStyles(selected_element, "fill"));
+      // ////console.log(getStyles(selected_element, "fill"));
       colorMapping[neigh] = getComputedStyle(selected_element)["fill"];
     });
 
-    console.log(colorMapping);
+    ////console.log(colorMapping);
 
     // Update the color Scale of Map
     changeMapColorByMeasure();
@@ -389,13 +401,13 @@ function callback(data) {
     allNeighbourhoods.push(d.name);
   });
 
-  console.log(allNeighbourhoods);
+  ////console.log(allNeighbourhoods);
   madisonMap.features = madisonMap.features.filter((d) => {
-    // console.log(d.properties.NEIGHB_NAME);
+    // ////console.log(d.properties.NEIGHB_NAME);
     return allNeighbourhoods.indexOf(d.properties.NEIGHB_NAME) !== -1;
   });
 
-  console.log(madisonMap);
+  ////console.log(madisonMap);
 
   var attributeWithYear = L.geoJson(madisonMap, {
     style: style,
@@ -421,7 +433,7 @@ function joinData(madisonMap, attribute, measureYear) {
         madisonMap.features[i]["properties"]["geo_key"] =
           attribute[j]["geo_key"];
 
-        // console.log(stateName + attributes_19[j]["income"]);
+        // ////console.log(stateName + attributes_19[j]["income"]);
       }
     }
   }
@@ -518,7 +530,7 @@ function createBarChart() {
 }
 
 function changeBarChartByMeasure(bars) {
-  console.log("changeBarChartByMeasure");
+  ////console.log("changeBarChartByMeasure");
   var maxValue = d3.max(attributes_19, (d) => {
     return parseFloat(d[measure]);
   });
@@ -566,13 +578,13 @@ function changeBarChartByMeasure(bars) {
 function updateBarChartColor(colorScale) {
   var bar = d3.select("#barChart").select(".barchart");
   neighborhoods.forEach((neigh) => {
-    console.log(neigh, neigh_id_dict[neigh]);
+    ////console.log(neigh, neigh_id_dict[neigh]);
 
     // var selectedBar = document.getElementsByClassName(neigh + "Bar");
     var selectedBar = bar
       .select("#_" + neigh_id_dict[neigh])
       .style("fill", colorScale(neigh));
-    console.log(selectedBar);
+    ////console.log(selectedBar);
 
     // selectedBar[0].style["fill"] = colorScale(neigh);
     // // selectedBar[1].style["color"] = colorScale(neigh);
@@ -647,7 +659,7 @@ function createLineChart(data) {
   var yScale = d3.scaleLinear().range([innerHeight, 0]).nice();
 
   // if (neighborhoods.length === 0) {
-  //   console.log("Zero length");
+  //   ////console.log("Zero length");
   //   yScale.domain([0, 5000]);
   // }
   // const yAxis = d3.axisLeft(yScale).tickSize(-innerWidth);
@@ -705,8 +717,8 @@ function createLineChart(data) {
 }
 
 function addLine(colorScale) {
-  console.log("enter add line");
-  console.log(attributes_all_new);
+  ////console.log("enter add line");
+  ////console.log(attributes_all_new);
   var height = 200;
   var width = 550;
   var margin = { top: 10, right: 10, bottom: 10, left: 10 };
@@ -731,7 +743,7 @@ function addLine(colorScale) {
     return neighborhoods.includes(d.name);
   });
 
-  console.log(data.length);
+  ////console.log(data.length);
 
   // Find the max value of selected neighborhoods
   if (data.length === 0) {
@@ -742,7 +754,7 @@ function addLine(colorScale) {
     });
   }
 
-  console.log(maxValue);
+  ////console.log(maxValue);
 
   var nested = d3.group(data, (d) => d.name);
 
@@ -766,7 +778,7 @@ function addLine(colorScale) {
   const xAxis = d3.axisBottom(xScale).tickSize(-innerHeight).tickPadding(15);
   const yAxis = d3.axisLeft(yScale).tickSize(-innerWidth).tickPadding(10);
   var yAxisG, xAxisG;
-  console.log(document.querySelectorAll(".y-grid"));
+  ////console.log(document.querySelectorAll(".y-grid"));
   // if no axis exists, create one, otherwise update it
   if (neighborhoods.length < 1) {
     yAxisG = g.append("g").attr("class", "y-grid").call(yAxis);
@@ -816,7 +828,7 @@ function addLine(colorScale) {
 
     lineData.push(temp);
   });
-  console.log(lineData);
+  ////console.log(lineData);
 
   $(".line-chart-title").text(
     measure + " by neighborhood from year 2012 - 2019"
@@ -829,7 +841,7 @@ function addLine(colorScale) {
   //   .duration(1500)
   //   .attr("d", line)
   //   .style("stroke", function (d) {
-  //     console.log(d);
+  //     ////console.log(d);
   //     return colorScale(d.name);
   //   });
 
@@ -840,12 +852,12 @@ function addLine(colorScale) {
   //   .merge(lines)
   //   .attr("class", "line-path")
   //   .attr("id", (d) => {
-  //     console.log(d[0].geo_key);
+  //     ////console.log(d[0].geo_key);
   //     "_" + d[0].geo_key;
   //   })
   //   .attr("d", line)
   //   .style("stroke", function (d) {
-  //     console.log(d);
+  //     ////console.log(d);
   //     return colorScale(d[0].name);
   //   });
 
@@ -859,14 +871,14 @@ function addLine(colorScale) {
     .attr("class", "line-path")
     .merge(u)
     .attr("id", (d) => {
-      console.log(d[0].geo_key);
+      ////console.log(d[0].geo_key);
       "_" + d.geo_key;
     })
     .transition()
     .duration(3000)
     .attr("d", line)
     .style("stroke", function (d) {
-      console.log(d);
+      ////console.log(d);
       return colorScale(d[0].name);
     })
 
@@ -874,7 +886,7 @@ function addLine(colorScale) {
       return "_" + d[0].geo_key;
     })
     .style("className", function (d) {
-      console.log(d[0].name + "Line");
+      ////console.log(d[0].name + "Line");
       return d[0].name + "Line";
     });
 
@@ -889,7 +901,7 @@ function addLine(colorScale) {
   // neighborhoods.forEach(function (neigh) {
   //   // Arrange the year in ascending order;
   //   var temp = nested.get(neigh).sort((a, b) => a.year - b.year);
-  //   console.log(temp);
+  //   ////console.log(temp);
   //   var geo_key = temp[0].geo_key;
   //   g.append("path")
   //     .datum(temp)
@@ -912,10 +924,10 @@ function removeLine(d) {
   d3.select(".linePlot")
     .select("#" + geo_key_id)
     .remove();
-  // console.log(colorScale(d.properties.NEIGHB_NAME));
+  // ////console.log(colorScale(d.properties.NEIGHB_NAME));
   // var geoClassName = d.properties.NEIGHB_NAME + "Line";
-  // console.log(geoClassName);
-  // console.log(document.getElementsByClassName(geoClassName));
+  // ////console.log(geoClassName);
+  // ////console.log(document.getElementsByClassName(geoClassName));
 }
 
 function highlightNeighBar(geo_key) {
@@ -928,7 +940,7 @@ function highlightNeighBar(geo_key) {
 function highlightMap(d) {
   var selected_elements = document.getElementsByClassName(d.name + "Map");
   var selected_element = selected_elements[0];
-  console.log(selected_element);
+  ////console.log(selected_element);
   // selected_elements.style["weight"] = "red";
   selected_element.style["stroke"] = "red";
   selected_element.style["stroke-width"] = "4";
@@ -944,7 +956,7 @@ function dehighlightNeighBar(geo_key) {
 function dehighlightMap(d) {
   var selected_elements = document.getElementsByClassName(d.name + "Map");
   var selected_element = selected_elements[0];
-  console.log(selected_element);
+  ////console.log(selected_element);
   // selected_elements.style["weight"] = "red";
   selected_element.style["stroke"] = "grey";
   selected_element.style["stroke-width"] = "2";
@@ -961,7 +973,7 @@ function changeMapColorByMeasure() {
   neighborhoods.forEach(function (neigh) {
     var selected_elements = document.getElementsByClassName(neigh + "Map");
     var selected_element = selected_elements[0];
-    console.log(selected_element);
+    ////console.log(selected_element);
     // selected_elements.style["weight"] = "red";
     selected_element.style["fill"] = colorScale(neigh);
   });
@@ -970,7 +982,7 @@ function changeMapColorByMeasure() {
 function changeMapColor(d) {
   var selected_elements = document.getElementsByClassName(d.name + "Map");
   var selected_element = selected_elements[0];
-  console.log(selected_element);
+  ////console.log(selected_element);
   // selected_elements.style["weight"] = "red";
   selected_element.style["fill"] = colorScale(d.name);
   // selected_element.style["stroke-width"] = "4";
