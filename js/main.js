@@ -62,8 +62,8 @@ function onEachFeature(feature, layer) {
         feature.properties["NEIGHB_NAME"] +
         " " +
         //what is the point of this?
-        // feature.properties["OBJECTID"] +
-        // "<br>" +
+        feature.properties["OBJECTID"] +
+        "<br>" +
         popupContent +
         ": " +
         feature.properties[popupContent] +
