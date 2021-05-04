@@ -131,6 +131,7 @@ function resetHighlight(e) {
   }
 }
 
+//Gives neighborhodd a unique color when clicked
 function changeColor(e) {
   var layer = e.target;
   var neighborName = layer.feature.properties["NEIGHB_NAME"];
@@ -166,17 +167,18 @@ function changeColor(e) {
   }
 }
 
+//Returns run of styleadd
 function style(feature) {
-  return styleAdd(feature);
-}
+  return styleAdd(feature);}
 
+
+//colors each feature 
 function styleAdd(feature) {
   // $(".form-select").on("change", function () {
   //   attributeYear = $(this).find(":selected").text();
   // });
-
+  
   var combinedAttributes = measure + "_" + attributeYear;
-  ////console.log(combinedAttributes);
 
   if (feature.properties[combinedAttributes]) {
     if (colorMapping.hasOwnProperty(feature.properties.NEIGHB_NAME)) {
@@ -213,7 +215,7 @@ function styleAdd(feature) {
   }
 }
 
-//function to instantiate the Leaflet map
+//function to initiate the Leaflet map
 function createMap() {
   //add OSM base tilelayer
   L.tileLayer(
@@ -230,6 +232,7 @@ function createMap() {
   getData();
 }
 
+//promises all data
 function getData() {
   var promises = [
     d3.csv("data/nip_neighbassoc_19.csv"),
@@ -250,6 +253,7 @@ function getData() {
   Promise.all(promises).then(callback);
 }
 
+//
 function callback(data) {
   attributes_19 = data[0];
   attributes_18 = data[1];
@@ -275,7 +279,7 @@ function callback(data) {
 
   //console.log(attributes_all);
 
-  // Minor differences between two datasets
+  //Minor differences between two datasets
   var undefinedCommunity = [
     "Oakbridge Community Neighborhood Association",
     "Wexford Village Homeowners Association",
@@ -283,7 +287,7 @@ function callback(data) {
 
   attributes_19.map((d) => {
     if (undefinedCommunity.indexOf(d.name) === -1) {
-      // ////console.log("enter");
+      //console.log("enter");
       return (neigh_id_dict[d.name] = d.geo_key);
     }
   });
@@ -294,7 +298,7 @@ function callback(data) {
     (d) => d.properties.NEIGHB_NAME
   );
 
-  // ////console.log(all_neighborhoods);
+  //console.log(all_neighborhoods);
 
   const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
   colorScale.domain(all_neighborhoods);
@@ -315,7 +319,7 @@ function callback(data) {
     return neigh.properties["NEIGHB_NAME"] !== "City of Madison";
   });
 
-  ////console.log(attributes_all);
+  //console.log(attributes_all);
 
   // Change data format from string to numerical value
   attributes_all_new = attributes_all.map(function (d) {
@@ -342,8 +346,8 @@ function callback(data) {
   // Add eventListener for measure select menu
   $(".measure-select").on("change", function () {
     measure = $(this).find(":selected").val();
-    ////console.log(measure);
-    ////console.log(attributes_all_new);
+    //console.log(measure);
+    //console.log(attributes_all_new);
 
     // Calculate the maximum value of selected measure
     var maxValueByMeasure = d3.max(attributes_all_new, (d) => {
@@ -356,19 +360,19 @@ function callback(data) {
       .domain([0, maxValueByMeasure]);
 
     // Remember the color of the selected elements
-    ////console.log(neighborhoods);
+    //console.log(neighborhoods);
     colorMapping = {};
     neighborhoods.forEach((neigh) => {
       var selected_elements = document.getElementsByClassName(neigh + "Map");
       var selected_element = selected_elements[0];
-      ////console.log(selected_element);
-      ////console.log(getComputedStyle(selected_element)["fill"]);
-      // selected_elements.style["weight"] = "red";
-      // ////console.log(getStyles(selected_element, "fill"));
+      //console.log(selected_element);
+      //console.log(getComputedStyle(selected_element)["fill"]);
+      //selected_elements.style["weight"] = "red";
+      //console.log(getStyles(selected_element, "fill"));
       colorMapping[neigh] = getComputedStyle(selected_element)["fill"];
     });
 
-    ////console.log(colorMapping);
+    //console.log(colorMapping);
 
     // Update the color Scale of Map
     changeMapColorByMeasure();
@@ -407,7 +411,8 @@ function callback(data) {
     return allNeighbourhoods.indexOf(d.properties.NEIGHB_NAME) !== -1;
   });
 
-  ////console.log(madisonMap);
+  //
+  console.log(madisonMap);
 
   var attributeWithYear = L.geoJson(madisonMap, {
     style: style,
@@ -439,6 +444,7 @@ function joinData(madisonMap, attribute, measureYear) {
   }
 }
 
+//Create bar chart
 function createBarChart() {
   // var maxValue = d3.max(attributes_19, (d) => {
   //   return parseFloat(d[measure]);
@@ -529,6 +535,7 @@ function createBarChart() {
   changeBarChartByMeasure(bars);
 }
 
+//
 function changeBarChartByMeasure(bars) {
   ////console.log("changeBarChartByMeasure");
   var maxValue = d3.max(attributes_19, (d) => {
@@ -575,6 +582,7 @@ function changeBarChartByMeasure(bars) {
   //   bar.style("fill", colorScale(d.name));
 }
 
+//
 function updateBarChartColor(colorScale) {
   var bar = d3.select("#barChart").select(".barchart");
   neighborhoods.forEach((neigh) => {
@@ -605,6 +613,7 @@ function reupdateBarChartColor(d) {
   // selectedBar[0].style["fill"] = getColor(d.properties[variableName]);
 }
 
+//
 function createLineChart(data) {
   var height = 200;
   var width = 550;
@@ -716,6 +725,7 @@ function createLineChart(data) {
   addLine(colorScale);
 }
 
+//
 function addLine(colorScale) {
   ////console.log("enter add line");
   ////console.log(attributes_all_new);
@@ -919,6 +929,7 @@ function addLine(colorScale) {
   // });
 }
 
+//
 function removeLine(d) {
   var geo_key_id = "_" + d.properties.geo_key;
   d3.select(".linePlot")
@@ -930,6 +941,7 @@ function removeLine(d) {
   // ////console.log(document.getElementsByClassName(geoClassName));
 }
 
+//
 function highlightNeighBar(geo_key) {
   var barChart = d3.select("#barChart").select("." + "barchart");
   var bar = barChart.select("#_" + geo_key);
@@ -937,22 +949,24 @@ function highlightNeighBar(geo_key) {
   bar.style("stroke", "red").style("stroke-width", "3");
 }
 
+//
 function highlightMap(d) {
   var selected_elements = document.getElementsByClassName(d.name + "Map");
   var selected_element = selected_elements[0];
-  ////console.log(selected_element);
-  // selected_elements.style["weight"] = "red";
+  //console.log(selected_element);
+  //selected_elements.style["weight"] = "red";
   selected_element.style["stroke"] = "red";
   selected_element.style["stroke-width"] = "4";
 }
 
+//
 function dehighlightNeighBar(geo_key) {
   var barChart = d3.select("#barChart").select("." + "barchart");
   var bar = barChart.select("#_" + geo_key);
-
   bar.style("stroke", "white").style("stroke-width", "0.1");
 }
 
+//
 function dehighlightMap(d) {
   var selected_elements = document.getElementsByClassName(d.name + "Map");
   var selected_element = selected_elements[0];
@@ -962,6 +976,7 @@ function dehighlightMap(d) {
   selected_element.style["stroke-width"] = "2";
 }
 
+//
 function changeMapColorByMeasure() {
   L.geoJson(madisonMap, {
     style: style,
@@ -979,6 +994,7 @@ function changeMapColorByMeasure() {
   });
 }
 
+//
 function changeMapColor(d) {
   var selected_elements = document.getElementsByClassName(d.name + "Map");
   var selected_element = selected_elements[0];
